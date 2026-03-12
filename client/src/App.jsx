@@ -10,7 +10,7 @@ import StatsDashboard from './components/StatsDashboard';
 const API_BASE = 'http://localhost:5000';
 
 export default function App() {
-  const [code, setCode] = useState(''); // start with empty code
+  const [code, setCode] = useState('');
   const [warnings, setWarnings] = useState([]);
   const [stats, setStats] = useState(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
@@ -25,7 +25,6 @@ export default function App() {
   const editorRef = useRef(null);
   const debounceRef = useRef(null);
 
-  // Apply theme
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') root.classList.add('dark');
@@ -33,7 +32,6 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Fetch available rules
   useEffect(() => {
     axios.get(`${API_BASE}/rules`).then((res) => {
       setAvailableRules(res.data.rules);
@@ -60,7 +58,6 @@ export default function App() {
     }
   }, [disabledRules]);
 
-  // Real-time debounced analysis
   useEffect(() => {
     if (!realTime) return;
     clearTimeout(debounceRef.current);
@@ -181,7 +178,6 @@ export default function App() {
         }}
       />
 
-      {/* Navbar */}
       <Navbar
         theme={theme}
         onThemeToggle={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
@@ -191,9 +187,7 @@ export default function App() {
         hasResults={warnings.length > 0}
       />
 
-      {/* Main split layout */}
       <div className="flex flex-1 gap-0 overflow-hidden">
-        {/* LEFT — Code Editor */}
         <div className="flex flex-col w-1/2 border-r border-slate-200 dark:border-surface-700 overflow-hidden">
           <CodeEditor
             code={code}
@@ -206,7 +200,6 @@ export default function App() {
           />
         </div>
 
-        {/* RIGHT — Results */}
         <div className="flex flex-col w-1/2 overflow-hidden">
           <ResultsPanel
             warnings={filteredWarnings}
@@ -224,12 +217,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* Stats Dashboard */}
       {hasAnalyzed && stats && (
         <StatsDashboard stats={stats} warnings={warnings} />
       )}
 
-      {/* Status Bar */}
       <StatusBar
         stats={stats}
         isAnalyzing={isAnalyzing}

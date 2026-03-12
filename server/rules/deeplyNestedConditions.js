@@ -1,23 +1,17 @@
-/**
- * Rule: Deeply Nested Conditions
- * Flags if/else chains nested more than 3 levels deep.
- */
-
-function checkDeeplyNestedConditions(ast) {
+// Rule: Flags if/else chains nested conditionally more than 3 levels deep.
+module.exports = function checkDeeplyNestedConditions(ast) {
   const warnings = [];
   const DEPTH_LIMIT = 3;
 
-  function walk(node, depth) {
+  function walk(node, depth = 0) {
     if (!node || typeof node !== 'object') return;
 
     let currentDepth = depth;
-
     if (node.type === 'IfStatement') {
       currentDepth++;
       if (currentDepth > DEPTH_LIMIT) {
-        const line = node.loc ? node.loc.start.line : 0;
         warnings.push({
-          line,
+          line: node.loc?.start.line || 0,
           type: 'Deeply Nested Condition',
           severity: 'Medium',
           message: `Condition nested ${currentDepth} levels deep (limit: ${DEPTH_LIMIT}). Consider early returns or extracting conditions to improve readability.`,
@@ -26,11 +20,12 @@ function checkDeeplyNestedConditions(ast) {
     }
 
     for (const key of Object.keys(node)) {
-      if (key === 'type') continue;
+      if (['type', 'loc', 'range'].includes(key)) continue;
+      
       const child = node[key];
       if (Array.isArray(child)) {
-        child.forEach((c) => walk(c, currentDepth));
-      } else if (child && typeof child === 'object' && child.type) {
+        child.forEach(c => walk(c, currentDepth));
+      } else if (child && typeof child === 'object') {
         walk(child, currentDepth);
       }
     }
@@ -38,6 +33,4 @@ function checkDeeplyNestedConditions(ast) {
 
   walk(ast, 0);
   return warnings;
-}
-
-module.exports = checkDeeplyNestedConditions;
+};

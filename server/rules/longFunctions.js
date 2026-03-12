@@ -1,15 +1,7 @@
-/**
- * Rule: Long Functions
- * Flags functions that exceed 50 lines — a maintainability concern.
- */
+// Rule: Flags functions that exceed 50 lines (maintainability).
+const FUNCTION_TYPES = new Set(['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression']);
 
-const FUNCTION_TYPES = new Set([
-  'FunctionDeclaration',
-  'FunctionExpression',
-  'ArrowFunctionExpression',
-]);
-
-function checkLongFunctions(ast) {
+module.exports = function checkLongFunctions(ast) {
   const warnings = [];
   const LIMIT = 50;
 
@@ -22,10 +14,7 @@ function checkLongFunctions(ast) {
       const lineCount = end - start + 1;
 
       if (lineCount > LIMIT) {
-        const name =
-          node.id && node.id.name
-            ? `"${node.id.name}"`
-            : '(anonymous function)';
+        const name = node.id?.name ? `"${node.id.name}"` : '(anonymous function)';
         warnings.push({
           line: start,
           type: 'Long Function',
@@ -36,11 +25,12 @@ function checkLongFunctions(ast) {
     }
 
     for (const key of Object.keys(node)) {
-      if (key === 'type') continue;
+      if (['type', 'loc', 'range'].includes(key)) continue;
+      
       const child = node[key];
       if (Array.isArray(child)) {
         child.forEach(walk);
-      } else if (child && typeof child === 'object' && child.type) {
+      } else if (child && typeof child === 'object') {
         walk(child);
       }
     }
@@ -48,6 +38,4 @@ function checkLongFunctions(ast) {
 
   walk(ast);
   return warnings;
-}
-
-module.exports = checkLongFunctions;
+};

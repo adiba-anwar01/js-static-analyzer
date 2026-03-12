@@ -1,11 +1,7 @@
-/**
- * Rule: console.log / console statements
- * Flags console.log, console.warn, console.error, console.info calls in production code.
- */
-
+// Rule: Flags console log calls in production code.
 const CONSOLE_METHODS = new Set(['log', 'warn', 'error', 'info', 'debug', 'trace']);
 
-function checkConsoleLog(ast) {
+module.exports = function checkConsoleLog(ast) {
   const warnings = [];
 
   function walk(node) {
@@ -13,18 +9,14 @@ function checkConsoleLog(ast) {
 
     if (
       node.type === 'CallExpression' &&
-      node.callee &&
-      node.callee.type === 'MemberExpression' &&
-      node.callee.object &&
-      node.callee.object.type === 'Identifier' &&
+      node.callee?.type === 'MemberExpression' &&
+      node.callee.object?.type === 'Identifier' &&
       node.callee.object.name === 'console' &&
-      node.callee.property &&
-      CONSOLE_METHODS.has(node.callee.property.name)
+      CONSOLE_METHODS.has(node.callee.property?.name)
     ) {
       const method = node.callee.property.name;
-      const line = node.loc ? node.loc.start.line : 0;
       warnings.push({
-        line,
+        line: node.loc?.start.line || 0,
         type: 'Console Statement',
         severity: 'Low',
         message: `console.${method}() found. Remove or replace with a proper logging library before production deployment.`,
@@ -32,11 +24,12 @@ function checkConsoleLog(ast) {
     }
 
     for (const key of Object.keys(node)) {
-      if (key === 'type') continue;
+      if (['type', 'loc', 'range'].includes(key)) continue;
+      
       const child = node[key];
       if (Array.isArray(child)) {
         child.forEach(walk);
-      } else if (child && typeof child === 'object' && child.type) {
+      } else if (child && typeof child === 'object') {
         walk(child);
       }
     }
@@ -44,6 +37,4 @@ function checkConsoleLog(ast) {
 
   walk(ast);
   return warnings;
-}
-
-module.exports = checkConsoleLog;
+};

@@ -3,7 +3,6 @@ import { Play, Loader2, Zap, ZapOff } from 'lucide-react';
 export default function StatusBar({ stats, isAnalyzing, realTime, onRealTimeToggle, onAnalyze, hasAnalyzed }) {
   return (
     <footer className="flex items-center justify-between px-4 py-2 bg-brand-600 dark:bg-surface-900 border-t border-brand-700 dark:border-surface-700 shrink-0 gap-4 flex-wrap">
-      {/* Left: Severity breakdown */}
       <div className="flex items-center gap-3">
         {stats ? (
           <>
@@ -36,9 +35,7 @@ export default function StatusBar({ stats, isAnalyzing, realTime, onRealTimeTogg
         )}
       </div>
 
-      {/* Right: Controls */}
       <div className="flex items-center gap-2">
-        {/* Real-time toggle */}
         <button
           onClick={onRealTimeToggle}
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
@@ -52,7 +49,6 @@ export default function StatusBar({ stats, isAnalyzing, realTime, onRealTimeTogg
           Real-time
         </button>
 
-        {/* Analyze button */}
         <button
           onClick={onAnalyze}
           disabled={isAnalyzing}

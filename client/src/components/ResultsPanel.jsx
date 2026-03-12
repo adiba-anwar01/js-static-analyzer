@@ -97,7 +97,6 @@ export default function ResultsPanel({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Panel Header */}
       <div className="section-header shrink-0 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -108,12 +107,10 @@ export default function ResultsPanel({
           )}
         </div>
         <div className="flex items-center gap-1">
-          {/* Copy button */}
           <button onClick={onCopyResults} className="btn-ghost text-xs py-1 px-2" title="Copy results">
             <Copy size={12} />
             <span className="hidden md:inline">Copy</span>
           </button>
-          {/* Rules toggle */}
           <button
             onClick={() => setShowRules((s) => !s)}
             className={`btn-ghost text-xs py-1 px-2 ${showRules ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-500' : ''}`}
@@ -125,7 +122,6 @@ export default function ResultsPanel({
         </div>
       </div>
 
-      {/* Rules Panel */}
       {showRules && availableRules.length > 0 && (
         <div className="px-3 py-2 border-b border-slate-200 dark:border-surface-700 bg-slate-50 dark:bg-surface-850 shrink-0">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Active Rules</p>
@@ -153,7 +149,6 @@ export default function ResultsPanel({
         </div>
       )}
 
-      {/* Filter Bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-900 shrink-0 overflow-x-auto">
         <Filter size={12} className="text-slate-400 shrink-0" />
         {['All', 'High', 'Medium', 'Low'].map((level) => (
@@ -177,7 +172,6 @@ export default function ResultsPanel({
         ))}
       </div>
 
-      {/* Warnings List */}
       <div className="flex-1 overflow-y-auto p-3">
         {isAnalyzing && (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
