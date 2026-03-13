@@ -2,11 +2,6 @@ import { useRef, useEffect, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import { Trash2, Search } from 'lucide-react';
 
-const SEVERITY_COLORS = {
-  High:   'rgba(239, 68, 68, 0.15)',
-  Medium: 'rgba(245, 158, 11, 0.12)',
-  Low:    'rgba(59, 130, 246, 0.10)',
-};
 const SEVERITY_BORDER = {
   High:   '#ef4444',
   Medium: '#f59e0b',
@@ -33,7 +28,7 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
         },
         glyphMarginHoverMessage: { value: `**${w.type}** (${w.severity})\n\n${w.message}` },
         lineDecoration: '',
-        // Using inline style via afterContentClassName is tricky, use linesDecorationsClassName
+
         linesDecorationsClassName:
           w.severity === 'High' ? 'decoration-high' :
           w.severity === 'Medium' ? 'decoration-medium' : 'decoration-low',
@@ -49,7 +44,7 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
     );
   }, [warnings]);
 
-  // Jump to line
+
   useEffect(() => {
     if (jumpToLine && editorInstanceRef.current) {
       editorInstanceRef.current.revealLineInCenter(jumpToLine);
@@ -58,7 +53,7 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
     }
   }, [jumpToLine]);
 
-  // Reapply decorations when warnings change
+
   useEffect(() => {
     if (editorInstanceRef.current && monacoRef.current) {
       applyDecorations(editorInstanceRef.current, monacoRef.current);
@@ -70,25 +65,8 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
     monacoRef.current = monaco;
     if (editorRef) editorRef.current = editor;
 
-    // Inject decoration CSS
-    const styleId = 'analyzer-decorations';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = `
-        .decoration-high   { background: rgba(239,68,68,0.18) !important; border-left: 3px solid #ef4444 !important; }
-        .decoration-medium { background: rgba(245,158,11,0.15) !important; border-left: 3px solid #f59e0b !important; }
-        .decoration-low    { background: rgba(59,130,246,0.12) !important; border-left: 3px solid #3b82f6 !important; }
-        .margin-high   { background: #ef4444; width: 3px !important; }
-        .margin-medium { background: #f59e0b; width: 3px !important; }
-        .margin-low    { background: #3b82f6; width: 3px !important; }
-      `;
-      document.head.appendChild(style);
-    }
-
     applyDecorations(editor, monaco);
 
-    // Auto format on mount
     editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
       editor.getAction('editor.action.formatDocument')?.run();
     });
@@ -100,7 +78,6 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
 
   return (
     <div className="flex flex-col h-full">
-      {/* Editor Toolbar */}
       <div className="section-header shrink-0">
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
@@ -124,7 +101,6 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
         </div>
       </div>
 
-      {/* Monaco Editor */}
       <div className="flex-1 overflow-hidden monaco-wrapper">
         <Editor
           height="100%"
@@ -134,22 +110,14 @@ export default function CodeEditor({ code, onChange, theme, warnings, jumpToLine
           theme={theme === 'dark' ? 'vs-dark' : 'vs'}
           onMount={handleEditorDidMount}
           options={{
-            fontSize: 13,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-            fontLigatures: true,
-            minimap: { enabled: true },
+            fontSize: 14,
+            minimap: { enabled: false },
             scrollBeyondLastLine: false,
             wordWrap: 'on',
-            lineNumbers: 'on',
             glyphMargin: true,
-            folding: true,
-            renderLineHighlight: 'line',
-            cursorBlinking: 'smooth',
-            smoothScrolling: true,
-            formatOnPaste: true,
             tabSize: 2,
             automaticLayout: true,
-            padding: { top: 8, bottom: 8 },
+            padding: { top: 16 },
           }}
         />
       </div>
