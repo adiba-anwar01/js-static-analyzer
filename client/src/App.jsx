@@ -10,6 +10,7 @@ import StatsDashboard from './components/StatsDashboard';
 const API_BASE = 'http://localhost:5000';
 
 export default function App() {
+
   const [code, setCode] = useState('');
   const [warnings, setWarnings] = useState([]);
   const [stats, setStats] = useState(null);
@@ -39,7 +40,7 @@ export default function App() {
   }, []);
 
   const analyze = useCallback(async (sourceCode) => {
-    if (!sourceCode.trim()) return; // skip empty input
+    if (!sourceCode.trim()) return;
     setIsAnalyzing(true);
     try {
       const { data } = await axios.post(`${API_BASE}/analyze`, {
