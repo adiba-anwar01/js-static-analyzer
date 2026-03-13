@@ -11,7 +11,6 @@ import {
   CheckSquare,
   Square,
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 const SEVERITY_CONFIG = {
   High:   { icon: AlertCircle,   badgeClass: 'badge-high',   dotColor: 'bg-red-500',   label: 'High' },
