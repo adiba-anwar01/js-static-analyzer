@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   PieChart,
   Pie,
-  Cell,
   BarChart,
   Bar,
   XAxis,
@@ -19,8 +18,6 @@ const SEVERITY_COLORS_CHART = {
   Low: '#3b82f6',
 };
 
-const PIE_COLORS = ['#ef4444', '#f59e0b', '#3b82f6'];
-
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
@@ -36,20 +33,18 @@ const CustomTooltip = ({ active, payload }) => {
 export default function StatsDashboard({ stats, warnings }) {
   const [collapsed, setCollapsed] = useState(false);
 
-  const pieData = [
+  const severityData = [
     { name: 'High', value: stats.high },
     { name: 'Medium', value: stats.medium },
     { name: 'Low', value: stats.low },
   ].filter((d) => d.value > 0);
 
-  // Bar chart: warnings by type
-  const typeData = Object.entries(stats.byType || {})
+  const ruleTypeData = Object.entries(stats.byType || {})
     .map(([name, count]) => ({ name: name.length > 20 ? name.slice(0, 18) + '…' : name, count }))
     .sort((a, b) => b.count - a.count);
 
   return (
     <div className="border-t border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-900 shrink-0">
-      {/* Dashboard Header */}
       <button
         className="section-header w-full hover:bg-slate-50 dark:hover:bg-surface-850 transition-colors"
         onClick={() => setCollapsed((c) => !c)}
@@ -64,11 +59,9 @@ export default function StatsDashboard({ stats, warnings }) {
         {collapsed ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronUp size={14} className="text-slate-400" />}
       </button>
 
-      {/* Charts */}
       {!collapsed && (
         <div className="flex gap-4 px-4 py-3 overflow-x-auto">
-          {/* Severity Pie */}
-          {pieData.length > 0 && (
+          {severityData.length > 0 && (
             <div className="shrink-0">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 text-center">
                 By Severity
@@ -76,7 +69,7 @@ export default function StatsDashboard({ stats, warnings }) {
               <ResponsiveContainer width={160} height={120}>
                 <PieChart>
                   <Pie
-                    data={pieData}
+                    data={severityData}
                     cx="50%"
                     cy="50%"
                     innerRadius={28}
@@ -84,8 +77,8 @@ export default function StatsDashboard({ stats, warnings }) {
                     dataKey="value"
                     paddingAngle={3}
                   >
-                    {pieData.map((entry, index) => (
-                      <Cell key={index} fill={PIE_COLORS[['High', 'Medium', 'Low'].indexOf(entry.name)]} />
+                    {severityData.map((entry, index) => (
+                      <Cell key={index} fill={SEVERITY_COLORS_CHART[entry.name]} />
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
@@ -100,14 +93,13 @@ export default function StatsDashboard({ stats, warnings }) {
             </div>
           )}
 
-          {/* By Type Bar */}
-          {typeData.length > 0 && (
+          {ruleTypeData.length > 0 && (
             <div className="flex-1 min-w-[280px]">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
                 By Rule Type
               </p>
               <ResponsiveContainer width="100%" height={120}>
-                <BarChart data={typeData} margin={{ top: 0, right: 8, left: -20, bottom: 0 }}>
+                <BarChart data={ruleTypeData} margin={{ top: 0, right: 8, left: -20, bottom: 0 }}>
                   <XAxis
                     dataKey="name"
                     tick={{ fontSize: 10, fill: '#94a3b8' }}
@@ -122,7 +114,7 @@ export default function StatsDashboard({ stats, warnings }) {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {typeData.map((entry, index) => {
+                    {ruleTypeData.map((entry, index) => {
                       // Color bar based on whether any warning for this type is high/medium/low
                       const sample = warnings.find((w) =>
                         w.type === Object.keys(stats.byType)[index] ||
@@ -139,7 +131,6 @@ export default function StatsDashboard({ stats, warnings }) {
             </div>
           )}
 
-          {/* Quick metrics */}
           <div className="shrink-0 grid grid-cols-2 gap-2 content-start">
             {[
               { label: 'Total Issues', value: stats.total, color: 'text-brand-500' },
