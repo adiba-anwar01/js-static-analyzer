@@ -1,18 +1,12 @@
-/* =========================================
-   1. Font Imports
-   ========================================= */
+/* Font Imports */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* =========================================
-   2. Tailwind Directives
-   ========================================= */
+/* Tailwind Directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* =========================================
-   3. Base Styles & Theme Variables
-   ========================================= */
+/* Base Styles & Theme Variables */
 @layer base {
 
   /* Scrollbar theme variables */
@@ -54,9 +48,9 @@
   }
 }
 
-/* =========================================
-   4. Reusable UI Components
-   ========================================= */
+
+/* Reusable UI Components */
+
 @layer components {
 
   /* Buttons */
@@ -99,27 +93,21 @@
   }
 }
 
-/* =========================================
-   5. Utilities & Interactions
-   ========================================= */
+/* Utilities & Interactions */
 @layer utilities {
 
-  /* Monaco Editor container adjustments */
   .monaco-wrapper {
     @apply rounded-b-xl overflow-hidden;
   }
 
-  /* Replace redundant vanilla UI keyframes with semantic Tailwind properties */
   .spin {
     @apply animate-spin;
   }
 
-  /* File Drag-and-drop overlay */
   .drag-active {
     @apply ring-2 ring-brand-500 ring-offset-2;
   }
 
-  /* Monaco Editor decorations */
   .decoration-high {
     background: rgba(239, 68, 68, 0.18) !important;
     border-left: 3px solid #ef4444 !important;

@@ -6,7 +6,6 @@ module.exports = function checkDuplicateVarDeclarations(ast) {
   function walk(node, scopeStack) {
     if (!node || typeof node !== 'object') return;
 
-    // Create a new scope level for BlockStatements, Functions, and Loops
     const isNewScope = [
       'BlockStatement', 'FunctionDeclaration', 'FunctionExpression',
       'ArrowFunctionExpression', 'ForStatement', 'ForInStatement',

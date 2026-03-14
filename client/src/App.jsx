@@ -1,22 +1,23 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
-import { Toaster, toast } from 'react-hot-toast';
-import Navbar from './components/Navbar';
-import CodeEditor from './components/CodeEditor';
-import ResultsPanel from './components/ResultsPanel';
-import StatusBar from './components/StatusBar';
-import StatsDashboard from './components/StatsDashboard';
+import { useState, useEffect, useCallback, useRef } from "react";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
+import Navbar from "./components/Navbar";
+import CodeEditor from "./components/CodeEditor";
+import ResultsPanel from "./components/ResultsPanel";
+import StatusBar from "./components/StatusBar";
+import StatsDashboard from "./components/StatsDashboard";
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function App() {
-
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const [warnings, setWarnings] = useState([]);
   const [stats, setStats] = useState(null);
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "dark",
+  );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [severityFilter, setSeverityFilter] = useState('All');
+  const [severityFilter, setSeverityFilter] = useState("All");
   const [realTime, setRealTime] = useState(false);
   const [availableRules, setAvailableRules] = useState([]);
   const [disabledRules, setDisabledRules] = useState([]);
@@ -28,36 +29,44 @@ export default function App() {
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') root.classList.add('dark');
-    else root.classList.remove('dark');
-    localStorage.setItem('theme', theme);
+    if (theme === "dark") root.classList.add("dark");
+    else root.classList.remove("dark");
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   useEffect(() => {
-    axios.get(`${API_BASE}/rules`).then((res) => {
-      setAvailableRules(res.data.rules);
-    }).catch(() => { });
+    axios
+      .get(`${API_BASE}/rules`)
+      .then((res) => {
+        setAvailableRules(res.data.rules);
+      })
+      .catch(() => {});
   }, []);
 
-  const analyze = useCallback(async (sourceCode) => {
-    if (!sourceCode.trim()) return;
-    setIsAnalyzing(true);
-    try {
-      const { data } = await axios.post(`${API_BASE}/analyze`, {
-        code: sourceCode,
-        disabledRules,
-      });
-      setWarnings(data.warnings || []);
-      setStats(data.stats || null);
-      setHasAnalyzed(true);
-    } catch (err) {
-      toast.error('Could not connect to analyzer server. Make sure it is running on port 5000.');
-      setWarnings([]);
-      setStats(null);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }, [disabledRules]);
+  const analyze = useCallback(
+    async (sourceCode) => {
+      if (!sourceCode.trim()) return;
+      setIsAnalyzing(true);
+      try {
+        const { data } = await axios.post(`${API_BASE}/analyze`, {
+          code: sourceCode,
+          disabledRules,
+        });
+        setWarnings(data.warnings || []);
+        setStats(data.stats || null);
+        setHasAnalyzed(true);
+      } catch (err) {
+        toast.error(
+          "Could not connect to analyzer server. Make sure it is running on port 5000.",
+        );
+        setWarnings([]);
+        setStats(null);
+      } finally {
+        setIsAnalyzing(false);
+      }
+    },
+    [disabledRules],
+  );
 
   useEffect(() => {
     if (!realTime) return;
@@ -71,7 +80,7 @@ export default function App() {
   const handleAnalyze = () => analyze(code);
 
   const handleClear = () => {
-    setCode('');
+    setCode("");
     setWarnings([]);
     setStats(null);
     setHasAnalyzed(false);
@@ -79,8 +88,12 @@ export default function App() {
 
   const handleFileUpload = (file) => {
     if (!file) return;
-    if (!file.name.endsWith('.js') && !file.name.endsWith('.mjs') && !file.name.endsWith('.cjs')) {
-      toast.error('Please upload a .js file');
+    if (
+      !file.name.endsWith(".js") &&
+      !file.name.endsWith(".mjs") &&
+      !file.name.endsWith(".cjs")
+    ) {
+      toast.error("Please upload a .js file");
       return;
     }
     const reader = new FileReader();
@@ -100,44 +113,47 @@ export default function App() {
       stats,
       warnings,
     };
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(report, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `analysis-report-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Report downloaded');
+    toast.success("Report downloaded");
   };
 
   const handleDownloadText = () => {
     const lines = [
-      'JavaScript Static Code Analysis Report',
+      "JavaScript Static Code Analysis Report",
       `Generated: ${new Date().toLocaleString()}`,
-      '='.repeat(50),
+      "=".repeat(50),
       `Total Issues: ${stats?.total ?? 0}  High: ${stats?.high ?? 0}  Medium: ${stats?.medium ?? 0}  Low: ${stats?.low ?? 0}`,
-      '='.repeat(50),
-      '',
+      "=".repeat(50),
+      "",
       ...warnings.map(
-        (w, i) => `[${i + 1}] Line ${w.line} | ${w.severity} | ${w.type}\n    ${w.message}`
+        (w, i) =>
+          `[${i + 1}] Line ${w.line} | ${w.severity} | ${w.type}\n    ${w.message}`,
       ),
     ];
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `analysis-report-${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Text report downloaded');
+    toast.success("Text report downloaded");
   };
 
   const handleCopyResults = () => {
     const text = warnings
       .map((w) => `Line ${w.line} | ${w.severity} | ${w.type}: ${w.message}`)
-      .join('\n');
-    navigator.clipboard.writeText(text || 'No warnings found.');
-    toast.success('Results copied to clipboard');
+      .join("\n");
+    navigator.clipboard.writeText(text || "No warnings found.");
+    toast.success("Results copied to clipboard");
   };
 
   const handleWarningClick = (line) => {
@@ -147,16 +163,21 @@ export default function App() {
 
   const toggleRule = (ruleId) => {
     setDisabledRules((prev) =>
-      prev.includes(ruleId) ? prev.filter((r) => r !== ruleId) : [...prev, ruleId]
+      prev.includes(ruleId)
+        ? prev.filter((r) => r !== ruleId)
+        : [...prev, ruleId],
     );
   };
 
   const filteredWarnings =
-    severityFilter === 'All'
+    severityFilter === "All"
       ? warnings
       : warnings.filter((w) => w.severity === severityFilter);
 
-  const handleDragOver = (e) => { e.preventDefault(); setDragActive(true); };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
   const handleDragLeave = () => setDragActive(false);
   const handleDrop = (e) => {
     e.preventDefault();
@@ -167,7 +188,7 @@ export default function App() {
 
   return (
     <div
-      className={`flex flex-col h-screen bg-surface-50 dark:bg-surface-950 overflow-hidden transition-all duration-200 ${dragActive ? 'ring-4 ring-inset ring-brand-500' : ''}`}
+      className={`flex flex-col h-screen bg-surface-50 dark:bg-surface-950 overflow-hidden transition-all duration-200 ${dragActive ? "ring-4 ring-inset ring-brand-500" : ""}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -175,21 +196,22 @@ export default function App() {
       <Toaster
         position="top-right"
         toastOptions={{
-          className: '!bg-white dark:!bg-surface-800 !text-slate-800 dark:!text-slate-100 !shadow-lg !border !border-slate-200 dark:!border-surface-700',
+          className:
+            "!bg-white dark:!bg-surface-800 !text-slate-800 dark:!text-slate-100 !shadow-lg !border !border-slate-200 dark:!border-surface-700",
         }}
       />
 
       <Navbar
         theme={theme}
-        onThemeToggle={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+        onThemeToggle={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
         onFileUpload={handleFileUpload}
         onDownloadJSON={handleDownloadJSON}
         onDownloadText={handleDownloadText}
         hasResults={warnings.length > 0}
       />
 
-      <div className="flex flex-1 gap-0 overflow-hidden">
-        <div className="flex flex-col w-1/2 border-r border-slate-200 dark:border-surface-700 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 gap-0 overflow-hidden">
+        <div className="flex flex-col w-full md:w-1/2 md:border-r border-slate-200 dark:border-surface-700 overflow-hidden min-h-[300px]">
           <CodeEditor
             code={code}
             onChange={setCode}
@@ -201,7 +223,7 @@ export default function App() {
           />
         </div>
 
-        <div className="flex flex-col w-1/2 overflow-hidden">
+        <div className="flex flex-col w-full md:w-1/2 overflow-hidden">
           <ResultsPanel
             warnings={filteredWarnings}
             allWarnings={warnings}
@@ -219,7 +241,9 @@ export default function App() {
       </div>
 
       {hasAnalyzed && stats && (
-        <StatsDashboard stats={stats} warnings={warnings} />
+        <div className="w-full">
+          <StatsDashboard stats={stats} warnings={warnings} />
+        </div>
       )}
 
       <StatusBar

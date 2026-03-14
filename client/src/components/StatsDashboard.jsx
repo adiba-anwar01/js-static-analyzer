@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  Cell,
 } from 'recharts';
 import { BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
 

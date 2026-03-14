@@ -39,4 +39,4 @@ app.post('/analyze', (req, res) => {
   res.json({ warnings, stats, parseError });
 });
 
-app.listen(PORT, () => console.log(`🔍 JS Analyzer Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`JS Analyzer Server running on http://localhost:${PORT}`));
