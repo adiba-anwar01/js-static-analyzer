@@ -110,7 +110,7 @@ User Code → Analysis Engine → Code Metrics → Dashboard Visualization
 
 ## Code Analysis
 
-- Esprima (JavaScript Parser)
+- Esprima  (JavaScript Parser)
 
 ## Developer Tools
 
