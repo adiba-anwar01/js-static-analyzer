@@ -43,14 +43,24 @@ js_analyzer/
 └── README.md                      # Project documentation
 ```
 ---
-# 📸 Screenshots
+## 📸 Screenshots
 
-```
-Screenshots/
-editor.png
-dashboard.png
-results.png
-```
+### 💻 JS Analyzer Views
+
+| 🌞 **Light Mode** |
+|:--:|
+| [![Light Mode](screenshots/js_analyzer_light_mode.png)](screenshots/js_analyzer_light_mode.png) |
+
+| 🌙 **Dark Mode** |
+|:--:|
+| [![Dark Mode](screenshots/js_analyzer_dark_mode.png)](screenshots/js_analyzer_dark_mode.png) |
+
+| 🖥️ **Analysis Results** |
+|:--:|
+| [![Analysis Results](screenshots/analysis_results.png)](screenshots/analysis_results.png) |
+
+
+⚡Code. Analyze. Improve. Repeat.
 
 ---
 
@@ -100,7 +110,7 @@ User Code → Analysis Engine → Code Metrics → Dashboard Visualization
 
 ## Code Analysis
 
-- Esprima (JavaScript Parser)
+- Esprima  (JavaScript Parser)
 
 ## Developer Tools
 
@@ -140,7 +150,7 @@ npm install
 ### Backend
 
 ```bash
-cd ../server
+cd server
 npm install
 ```
 
