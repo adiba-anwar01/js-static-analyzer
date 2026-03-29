@@ -2,34 +2,34 @@ import { Play, Loader2, Zap, ZapOff } from 'lucide-react';
 
 export default function StatusBar({ stats, isAnalyzing, realTime, onRealTimeToggle, onAnalyze, hasAnalyzed }) {
   return (
-    <footer className="flex items-center justify-between px-4 py-2 bg-brand-600 dark:bg-surface-900 border-t border-brand-700 dark:border-surface-700 shrink-0 gap-4 flex-wrap">
+    <footer className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-t border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
       <div className="flex items-center gap-3">
         {stats ? (
           <>
-            <span className="text-xs text-white/70 dark:text-slate-400">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               Issues:
             </span>
-            <span className="text-xs font-bold text-white dark:text-slate-100">
+            <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
               {stats.total}
             </span>
             {stats.high > 0 && (
-              <span className="badge bg-red-500/20 text-red-200 dark:bg-red-900/30 dark:text-red-400 border border-red-400/30">
+              <span className="badge border border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-900/30 dark:text-red-300">
                 {stats.high} High
               </span>
             )}
             {stats.medium > 0 && (
-              <span className="badge bg-amber-500/20 text-amber-200 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-400/30">
+              <span className="badge border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/30 dark:text-amber-300">
                 {stats.medium} Medium
               </span>
             )}
             {stats.low > 0 && (
-              <span className="badge bg-blue-400/20 text-blue-200 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-400/30">
+              <span className="badge border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/40 dark:bg-blue-900/30 dark:text-blue-300">
                 {stats.low} Low
               </span>
             )}
           </>
         ) : (
-          <span className="text-xs text-white/50 dark:text-slate-500">
+          <span className="text-xs text-slate-500 dark:text-slate-500">
             {hasAnalyzed ? 'No issues detected' : 'Run analysis to see results'}
           </span>
         )}
@@ -38,10 +38,10 @@ export default function StatusBar({ stats, isAnalyzing, realTime, onRealTimeTogg
       <div className="flex items-center gap-2">
         <button
           onClick={onRealTimeToggle}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
             realTime
-              ? 'bg-green-500 text-white shadow-sm'
-              : 'bg-white/10 dark:bg-surface-700 text-white/70 dark:text-slate-400 hover:bg-white/20 dark:hover:bg-surface-600'
+              ? 'bg-green-500 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
           }`}
           title="Toggle real-time analysis"
         >
@@ -52,17 +52,14 @@ export default function StatusBar({ stats, isAnalyzing, realTime, onRealTimeTogg
         <button
           onClick={onAnalyze}
           disabled={isAnalyzing}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold
-                     bg-white dark:bg-brand-500 text-brand-600 dark:text-white
-                     hover:bg-slate-50 dark:hover:bg-brand-600 shadow-sm
-                     transition-all duration-200 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isAnalyzing ? (
             <Loader2 size={13} className="spin" />
           ) : (
             <Play size={13} />
           )}
-          {isAnalyzing ? 'Analyzing…' : 'Analyze Code'}
+          {isAnalyzing ? 'Analyzing...' : 'Analyze Code'}
         </button>
       </div>
     </footer>

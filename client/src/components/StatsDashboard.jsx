@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   PieChart,
   Pie,
+  Cell,
   BarChart,
   Bar,
   XAxis,
@@ -9,7 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Cell,
 } from 'recharts';
 import { BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -19,10 +19,12 @@ const SEVERITY_COLORS_CHART = {
   Low: '#3b82f6',
 };
 
+const PIE_COLORS = ['#ef4444', '#f59e0b', '#3b82f6'];
+
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-surface-800 border border-slate-200 dark:border-surface-700 rounded-lg px-3 py-2 shadow-lg text-xs">
+      <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-lg dark:border-slate-700 dark:bg-slate-800">
         <p className="font-semibold text-slate-700 dark:text-slate-200">{payload[0].name}</p>
         <p className="text-slate-500 dark:text-slate-400">Count: <span className="font-bold text-slate-800 dark:text-white">{payload[0].value}</span></p>
       </div>
@@ -34,24 +36,24 @@ const CustomTooltip = ({ active, payload }) => {
 export default function StatsDashboard({ stats, warnings }) {
   const [collapsed, setCollapsed] = useState(false);
 
-  const severityData = [
+  const pieData = [
     { name: 'High', value: stats.high },
     { name: 'Medium', value: stats.medium },
     { name: 'Low', value: stats.low },
   ].filter((d) => d.value > 0);
 
-  const ruleTypeData = Object.entries(stats.byType || {})
-    .map(([name, count]) => ({ name: name.length > 20 ? name.slice(0, 18) + '…' : name, count }))
+  const typeData = Object.entries(stats.byType || {})
+    .map(([name, count]) => ({ name: name.length > 20 ? `${name.slice(0, 18)}...` : name, count }))
     .sort((a, b) => b.count - a.count);
 
   return (
-    <div className="border-t border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-900 shrink-0">
+    <div className="shrink-0 border-t border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
       <button
-        className="section-header w-full hover:bg-slate-50 dark:hover:bg-surface-850 transition-colors"
+        className="section-header w-full transition hover:bg-slate-50 dark:hover:bg-slate-800"
         onClick={() => setCollapsed((c) => !c)}
       >
         <div className="flex items-center gap-2">
-          <BarChart2 size={14} className="text-brand-500" />
+          <BarChart2 size={14} className="text-indigo-600 dark:text-indigo-400" />
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
             Statistics Dashboard
           </span>
@@ -61,16 +63,16 @@ export default function StatsDashboard({ stats, warnings }) {
       </button>
 
       {!collapsed && (
-        <div className="flex gap-4 px-4 py-3 overflow-x-auto">
-          {severityData.length > 0 && (
+        <div className="flex gap-4 overflow-x-auto px-4 py-3">
+          {pieData.length > 0 && (
             <div className="shrink-0">
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 text-center">
+              <p className="mb-2 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
                 By Severity
               </p>
               <ResponsiveContainer width={160} height={120}>
                 <PieChart>
                   <Pie
-                    data={severityData}
+                    data={pieData}
                     cx="50%"
                     cy="50%"
                     innerRadius={28}
@@ -78,8 +80,8 @@ export default function StatsDashboard({ stats, warnings }) {
                     dataKey="value"
                     paddingAngle={3}
                   >
-                    {severityData.map((entry, index) => (
-                      <Cell key={index} fill={SEVERITY_COLORS_CHART[entry.name]} />
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={PIE_COLORS[['High', 'Medium', 'Low'].indexOf(entry.name)]} />
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
@@ -94,13 +96,13 @@ export default function StatsDashboard({ stats, warnings }) {
             </div>
           )}
 
-          {ruleTypeData.length > 0 && (
-            <div className="flex-1 min-w-[280px]">
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
+          {typeData.length > 0 && (
+            <div className="min-w-[280px] flex-1">
+              <p className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">
                 By Rule Type
               </p>
               <ResponsiveContainer width="100%" height={120}>
-                <BarChart data={ruleTypeData} margin={{ top: 0, right: 8, left: -20, bottom: 0 }}>
+                <BarChart data={typeData} margin={{ top: 0, right: 8, left: -20, bottom: 0 }}>
                   <XAxis
                     dataKey="name"
                     tick={{ fontSize: 10, fill: '#94a3b8' }}
@@ -115,15 +117,14 @@ export default function StatsDashboard({ stats, warnings }) {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {ruleTypeData.map((entry, index) => {
-                      // Color bar based on whether any warning for this type is high/medium/low
+                    {typeData.map((entry, index) => {
                       const sample = warnings.find((w) =>
                         w.type === Object.keys(stats.byType)[index] ||
-                        w.type.startsWith(entry.name.replace('…', ''))
+                        w.type.startsWith(entry.name.replace('...', ''))
                       );
                       const sev = sample?.severity || 'Low';
                       return (
-                        <Cell key={index} fill={SEVERITY_COLORS_CHART[sev] || '#6366f1'} />
+                        <Cell key={index} fill={SEVERITY_COLORS_CHART[sev] || '#4f46e5'} />
                       );
                     })}
                   </Bar>
@@ -132,19 +133,19 @@ export default function StatsDashboard({ stats, warnings }) {
             </div>
           )}
 
-          <div className="shrink-0 grid grid-cols-2 gap-2 content-start">
+          <div className="grid shrink-0 grid-cols-2 content-start gap-2">
             {[
-              { label: 'Total Issues', value: stats.total, color: 'text-brand-500' },
+              { label: 'Total Issues', value: stats.total, color: 'text-indigo-600 dark:text-indigo-400' },
               { label: 'High Risk', value: stats.high, color: 'text-red-500' },
               { label: 'Medium Risk', value: stats.medium, color: 'text-amber-500' },
               { label: 'Low Risk', value: stats.low, color: 'text-blue-500' },
             ].map(({ label, value, color }) => (
               <div
                 key={label}
-                className="bg-slate-50 dark:bg-surface-800 rounded-lg px-3 py-2 min-w-[80px]"
+                className="min-w-[80px] rounded-md bg-slate-50 px-3 py-2 dark:bg-slate-800"
               >
                 <p className={`text-xl font-bold ${color}`}>{value}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">{label}</p>
+                <p className="text-xs leading-tight text-slate-500 dark:text-slate-400">{label}</p>
               </div>
             ))}
           </div>
