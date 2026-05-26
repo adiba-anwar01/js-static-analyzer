@@ -214,3 +214,8 @@ Thoughtful contributions, improvements, and feedback are always welcome.
 ✨ Crafted with passion ❤️ by Adiba, focusing on building **scalable**, **interactive**, and **user-friendly** web applications.  
 
 ⭐ If you found this project useful, consider **starring the repository**.  
+
+## 📄 License
+
+This project is licensed under the MIT License.  
+See the LICENSE file for more information.
